@@ -44,36 +44,18 @@ u16 calcMGD(u8 kv, u8 thickness, u8 target, u8 filter, u8 magnification, u16 rad
   {
       p--;
   }
-
-
   // calculate thickness interpolation factor
 
   interpol = (1000 * (limited_mm - mm_index[p])) / (mm_index[p+1] - mm_index[p]);
 
   // thickness interpolate AGD-value from table that has pre-calculated (*10000) values for
   // EUREF sheet D0001629-2 c, g and s-factors
-
-  //if (target == TARGET_MO ) 
-  //{      // Mo anode
-  //  if( filter==FILTER_MATERIAL_RH) 
-  //    mgd = MGD_Rh[p][kv-20] - ((interpol * (MGD_Rh[p][kv-20] - MGD_Rh[p+1][kv-20])+500)/1000);
-  //  else 
-  //    mgd = MGD_Mo[p][kv-20] - ((interpol * (MGD_Mo[p][kv-20] - MGD_Mo[p+1][kv-20])+500)/1000);
-  //} 
-  //else 
-  //{          // Tungsten anode
-  //  if( filter == FILTER_MATERIAL_AG ) 
-  //    mgd = MGD_W_Ag[p][kv-20] - ((interpol * (MGD_W_Ag[p][kv-20] - MGD_W_Ag[p+1][kv-20])+500)/1000);     
-  //  else  
-  //    mgd = MGD_W_Rh[p][kv-20] - ((interpol * (MGD_W_Rh[p][kv-20] - MGD_W_Rh[p+1][kv-20])+500)/1000); 
-  //}
   if (target == TARGET_MO) {
       mgd = filter == FILTER_MATERIAL_RH ? calcMgdIedAnode(MGD_Rh, kv, p, interpol, filter) : calcMgdIedAnode(MGD_Mo, kv, p, interpol, filter);
   }
   else {
       mgd = filter == FILTER_MATERIAL_AG ? calcMgdIedAnode(MGD_W_Ag, kv, p, interpol, filter) : calcMgdIedAnode(MGD_W_Rh, kv, p, interpol, filter);
   }
-
 
   mgd = mgd * IED;
 
