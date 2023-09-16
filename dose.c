@@ -11,6 +11,8 @@ u16 getIED( void )
 }
 
 u32 calcInterpolate(u8 p, u8 limited_mm, const u8 mm_index[9]) {
+    // find correct thickness index 0 - 7 for table seek
+    // starting from high mm seek until equal or lower value is found from the table
     while (p != 0 && mm_index[p] >= limited_mm) {
         printf("p value:%d\n", p);
         p--;
@@ -26,8 +28,6 @@ u32 calcInterpolate(u8 p, u8 limited_mm, const u8 mm_index[9]) {
         return 0;
     }
 }
-
-
 
 
 u16 calcMgdIedAnode(const u16 material[][16], u8 kv, u8 p, u32 interpol, u8 filter)
@@ -56,19 +56,6 @@ u16 calcMGD(u8 kv, u8 thickness, u8 target, u8 filter, u8 magnification, u16 rad
  
   IED = calcIED(kv, limited_mm, target, filter, magnification, radOutput, mAs );
 
-  // find correct thickness index 0 - 7 for table seek
-  // starting from high mm seek until equal or lower value is found from the table
- // simplify the for and if with a while loop
-  
-  //while (p != 0 && mm_index[p] >= limited_mm)  // what is the use of this in the overall code... seems a lil redundant
-  //{
-  //    printf("p value:%d\n", p);
-  //    p--;
-  //}
-  //// calculate thickness interpolation factor
-  //printf("mm_index[p] value:%d\n", mm_index[p]);
-  //interpol = (1000 * (limited_mm - mm_index[p])) / (mm_index[p+1] - mm_index[p]);
-
   interpol = calcInterpolate(p, limited_mm, mm_index);
 
   // thickness interpolate AGD-value from table that has pre-calculated (*10000) values for
@@ -96,17 +83,6 @@ static u16 calcIED(u8 kv, u8 thickness, u8 target, u8 filter, u8 magnification, 
   u8 p = SEVEN;
   u32 interpol;
   u8 limited_mm=thickness;
-
-  // find correct thickness index   0 - 7 for table seek
-  // starting from high mm seek until equal or lower value is found from the table
-  //while (p != 0 && mm_index[p] >= limited_mm)  // what is the use of this in the overall code... seems a lil redundant
-  //{
-  //    printf("p value:%d\n", p);
-  //    p--;
-  //}
-  //// calculate thickness interpolation factor
-
-  //interpol = (1000 * (limited_mm - mm_index[p])) / (mm_index[p+1] - mm_index[p]);
 
   interpol = calcInterpolate(p, limited_mm, mm_index);
 
