@@ -13,8 +13,7 @@ u16 getIED( void )
 
 u16 calcMgdIedAnode(const u16 material[][16], u8 kv, u8 p, u32 interpol, u8 filter)
 {
-    return filter == FILTER_MATERIAL_MO ? calcMgdIedAnode(material, kv, p, interpol, filter) : calcMgdIedAnode(material, kv, p, interpol, filter);
-
+    return material[p][kv - 20] - ((interpol * (material[p][kv - 20] - material[p + 1][kv - 20]) + 500) / 1000);
 }
 
 // AGD calculation
