@@ -3,12 +3,32 @@
 #include <stdio.h>
 #include "dose.h"
 
-
+#define SEVEN 7 // why seven??   because the thickness can not be greater the 100---SO 103 doesnt matter
 
 u16 getIED( void )
 {
   return IED; 
 }
+
+u32 calcInterpolate(u8 p, u8 limited_mm, const u8 mm_index[9]) {
+    while (p != 0 && mm_index[p] >= limited_mm) {
+        printf("p value:%d\n", p);
+        p--;
+    }
+
+    if (p != 0) {
+        //printf("mm_index[p] value:%d\n", mm_index[p]);
+        return (1000 * (limited_mm - mm_index[p])) / (mm_index[p + 1] - mm_index[p]);
+    }
+    else {
+        //if p is 0 which can not be the case
+        printf("error");
+        return 0;
+    }
+}
+
+
+
 
 u16 calcMgdIedAnode(const u16 material[][16], u8 kv, u8 p, u32 interpol, u8 filter)
 {
@@ -21,7 +41,7 @@ u16 calcMGD(u8 kv, u8 thickness, u8 target, u8 filter, u8 magnification, u16 rad
   u32 mgd = 0;
   u32 interpol;
   u8 limited_mm;
-  u8 p;
+  u8 p = SEVEN;
   
   //simplify this if statements with ||
   if (thickness <= 0 || thickness > 120) {
@@ -39,15 +59,17 @@ u16 calcMGD(u8 kv, u8 thickness, u8 target, u8 filter, u8 magnification, u16 rad
   // find correct thickness index 0 - 7 for table seek
   // starting from high mm seek until equal or lower value is found from the table
  // simplify the for and if with a while loop
-  p = 7;
-  while (p != 0 && mm_index[p] >= limited_mm)
-  {
-      printf("p value:%d\n", p);
-      p--;
-  }
-  // calculate thickness interpolation factor
+  
+  //while (p != 0 && mm_index[p] >= limited_mm)  // what is the use of this in the overall code... seems a lil redundant
+  //{
+  //    printf("p value:%d\n", p);
+  //    p--;
+  //}
+  //// calculate thickness interpolation factor
+  //printf("mm_index[p] value:%d\n", mm_index[p]);
+  //interpol = (1000 * (limited_mm - mm_index[p])) / (mm_index[p+1] - mm_index[p]);
 
-  interpol = (1000 * (limited_mm - mm_index[p])) / (mm_index[p+1] - mm_index[p]);
+  interpol = calcInterpolate(p, limited_mm, mm_index);
 
   // thickness interpolate AGD-value from table that has pre-calculated (*10000) values for
   // EUREF sheet D0001629-2 c, g and s-factors
@@ -71,20 +93,22 @@ u16 calcMGD(u8 kv, u8 thickness, u8 target, u8 filter, u8 magnification, u16 rad
 static u16 calcIED(u8 kv, u8 thickness, u8 target, u8 filter, u8 magnification, u16 radOutput, u16 mAs )
 {
   u32 ied = 0;
-  u8 p;
+  u8 p = SEVEN;
   u32 interpol;
   u8 limited_mm=thickness;
 
   // find correct thickness index   0 - 7 for table seek
   // starting from high mm seek until equal or lower value is found from the table
-  for( p=7;p!=0;p-- ) {
-    if( mm_index[p]<=limited_mm )
-      break;
-  }
-  
-  // calculate thickness interpolation factor
+  //while (p != 0 && mm_index[p] >= limited_mm)  // what is the use of this in the overall code... seems a lil redundant
+  //{
+  //    printf("p value:%d\n", p);
+  //    p--;
+  //}
+  //// calculate thickness interpolation factor
 
-  interpol = (1000 * (limited_mm - mm_index[p])) / (mm_index[p+1] - mm_index[p]);
+  //interpol = (1000 * (limited_mm - mm_index[p])) / (mm_index[p+1] - mm_index[p]);
+
+  interpol = calcInterpolate(p, limited_mm, mm_index);
 
   // thickness interpolate IED-value from table that has pre-calculated (*10000) values for
   // kV and thickness dependent radiation output factor 
@@ -132,10 +156,10 @@ static u16 calcIED(u8 kv, u8 thickness, u8 target, u8 filter, u8 magnification, 
 int main() {
     // Define some test parameters
     u8 kv = 80;
-    u8 thickness = 10;
+    u8 thickness = 50;
     u8 target = TARGET_MO;
     u8 filter = FILTER_MATERIAL_RH;
-    u8 magnification = 180;
+    u8 magnification = 0;
     u16 radOutput = 5000;
     u16 mAs = 200;
 
