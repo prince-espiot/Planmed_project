@@ -1,4 +1,3 @@
-//#include "types.h"
 #include "tables.h"
 #include "parameters.h"
 #include <stdio.h>
@@ -23,17 +22,18 @@ u16 calcMGD(u8 kv, u8 thickness, u8 target, u8 filter, u8 magnification, u16 rad
   u32 interpol;
   u8 limited_mm;
   u8 p;
-
-  //simplify this if statments with ||
-  if (thickness == 0 || thickness > 120) // use OR
+  
+  //simplify this if statements with ||
+  if (thickness <= 0 || thickness > 120) {
       IED = 0;
       return 0;
+  }
   // esp. in man mode could expose with paddle up and then values become totally bogus
 
   // thickness must be limited between 10 - 100 mm
   // i CAN USE THE  ternary operator here c? T:F
   limited_mm = thickness < 10 ? 10 : (thickness > 100 ? 100 : thickness);
-
+ 
   IED = calcIED(kv, limited_mm, target, filter, magnification, radOutput, mAs );
 
   // find correct thickness index 0 - 7 for table seek
@@ -42,6 +42,7 @@ u16 calcMGD(u8 kv, u8 thickness, u8 target, u8 filter, u8 magnification, u16 rad
   p = 7;
   while (p != 0 && mm_index[p] >= limited_mm)
   {
+      printf("p value:%d\n", p);
       p--;
   }
   // calculate thickness interpolation factor
@@ -60,6 +61,7 @@ u16 calcMGD(u8 kv, u8 thickness, u8 target, u8 filter, u8 magnification, u16 rad
   mgd = mgd * IED;
 
   mgd = (u16)((mgd+5000) / 10000); // to make LSB of mgd equal 10 uGy for protocol spec and accuracy correctio / 1000
+  
   return (u16)mgd;
 }
 
@@ -86,7 +88,7 @@ static u16 calcIED(u8 kv, u8 thickness, u8 target, u8 filter, u8 magnification, 
 
   // thickness interpolate IED-value from table that has pre-calculated (*10000) values for
   // kV and thickness dependent radiation output factor 
-
+  // USE THE  ternary operator here c? T:F
   if (target == TARGET_MO ) 
   {          // Mo anode
     if (magnification > 170) 
@@ -106,24 +108,22 @@ static u16 calcIED(u8 kv, u8 thickness, u8 target, u8 filter, u8 magnification, 
   {         // W anode
     if (magnification >170) 
     {
-     ied = filter == FILTER_MATERIAL_MO ? calcMgdIedAnode(IED_W_mag18_Ag, kv, p, interpol, filter) : calcMgdIedAnode(IED_W_mag18_Rh, kv, p, interpol, filter);
+       
+     ied = filter == FILTER_MATERIAL_AG ? calcMgdIedAnode(IED_W_mag18_Ag, kv, p, interpol, filter) : calcMgdIedAnode(IED_W_mag18_Rh, kv, p, interpol, filter);
     }
     else if ( magnification >130)
     {
-     ied = filter == FILTER_MATERIAL_MO ? calcMgdIedAnode(IED_W_mag16_Ag, kv, p, interpol, filter) : calcMgdIedAnode(IED_W_mag16_Rh, kv, p, interpol, filter);
+     ied = filter == FILTER_MATERIAL_AG ? calcMgdIedAnode(IED_W_mag16_Ag, kv, p, interpol, filter) : calcMgdIedAnode(IED_W_mag16_Rh, kv, p, interpol, filter);
     }
     else 
     {
-    ied = filter == FILTER_MATERIAL_MO ? calcMgdIedAnode(IED_W_Ag, kv, p, interpol, filter) : calcMgdIedAnode(IED_W_Rh, kv, p, interpol, filter);
+    ied = filter == FILTER_MATERIAL_AG ? calcMgdIedAnode(IED_W_Ag, kv, p, interpol, filter) : calcMgdIedAnode(IED_W_Rh, kv, p, interpol, filter);
 
     }
   }
- 
   // IED value is multiplied by mAs and tube radiation output µGy/mAs
-
   ied = ((ied * mAs ) + 500) / 1000; 
   ied = ((ied * radOutput ) + 500 ) / 1000;
-
   return (u16)ied;
 }
 
@@ -132,10 +132,10 @@ static u16 calcIED(u8 kv, u8 thickness, u8 target, u8 filter, u8 magnification, 
 int main() {
     // Define some test parameters
     u8 kv = 80;
-    u8 thickness = 50;
+    u8 thickness = 10;
     u8 target = TARGET_MO;
     u8 filter = FILTER_MATERIAL_RH;
-    u8 magnification = 150;
+    u8 magnification = 180;
     u16 radOutput = 5000;
     u16 mAs = 200;
 
@@ -144,7 +144,7 @@ int main() {
 
     // Call the getIED function
     u16 ied_result = getIED();
-
+    
     // Print the results
     printf("MGD Result: %u\n", mgd_result);
     printf("IED Result: %u\n", ied_result);
