@@ -3,12 +3,16 @@
 #include <stdio.h>
 #include "dose.h"
 
+
+
 #define SEVEN 7 // why seven??   because the thickness can not be greater the 100---SO 103 doesnt matter
+#define THOUSAND 1000
 
 u16 getIED( void )
 {
   return IED; 
 }
+
 
 u32 calcInterpolate(u8 p, u8 limited_mm, const u8 mm_index[9]) {
     // find correct thickness index 0 - 7 for table seek
@@ -17,10 +21,9 @@ u32 calcInterpolate(u8 p, u8 limited_mm, const u8 mm_index[9]) {
         printf("p value:%d\n", p);
         p--;
     }
-
     if (p != 0) {
         //printf("mm_index[p] value:%d\n", mm_index[p]);
-        return (1000 * (limited_mm - mm_index[p])) / (mm_index[p + 1] - mm_index[p]);
+        return (THOUSAND * (limited_mm - mm_index[p])) / (mm_index[p + 1] - mm_index[p]);
     }
     else {
         //if p is 0 which can not be the case
@@ -29,10 +32,9 @@ u32 calcInterpolate(u8 p, u8 limited_mm, const u8 mm_index[9]) {
     }
 }
 
-
 u16 calcMgdIedAnode(const u16 material[][16], u8 kv, u8 p, u32 interpol, u8 filter)
 {
-    return material[p][kv - 20] - ((interpol * (material[p][kv - 20] - material[p + 1][kv - 20]) + 500) / 1000);
+    return material[p][kv - 20] - ((interpol * (material[p][kv - 20] - material[p + 1][kv - 20]) + 500) / THOUSAND);
 }
 
 // AGD calculation
@@ -68,15 +70,11 @@ u16 calcMGD(u8 kv, u8 thickness, u8 target, u8 filter, u8 magnification, u16 rad
   }
 
   mgd = mgd * IED;
-
   mgd = (u16)((mgd+5000) / 10000); // to make LSB of mgd equal 10 uGy for protocol spec and accuracy correctio / 1000
-  
   return (u16)mgd;
 }
 
-
 // IED (Incident Entrance Dose) calculation
-
 static u16 calcIED(u8 kv, u8 thickness, u8 target, u8 filter, u8 magnification, u16 radOutput, u16 mAs )
 {
   u32 ied = 0;
@@ -122,8 +120,8 @@ static u16 calcIED(u8 kv, u8 thickness, u8 target, u8 filter, u8 magnification, 
     }
   }
   // IED value is multiplied by mAs and tube radiation output µGy/mAs
-  ied = ((ied * mAs ) + 500) / 1000; 
-  ied = ((ied * radOutput ) + 500 ) / 1000;
+  ied = ((ied * mAs ) + 500) / THOUSAND;
+  ied = ((ied * radOutput ) + 500 ) / THOUSAND;
   return (u16)ied;
 }
 
