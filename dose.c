@@ -13,6 +13,9 @@ u16 getIED( void )
   return IED; 
 }
 
+int square(int x) {
+    return x * x;
+}
 
 u32 calcInterpolate(u8 p, u8 limited_mm, const u8 mm_index[9]) {
     // find correct thickness index 0 - 7 for table seek
@@ -127,25 +130,26 @@ static u16 calcIED(u8 kv, u8 thickness, u8 target, u8 filter, u8 magnification, 
 
 
 
-int main() {
-    // Define some test parameters
-    u8 kv = 80;
-    u8 thickness = 50;
-    u8 target = TARGET_MO;
-    u8 filter = FILTER_MATERIAL_RH;
-    u8 magnification = 0;
-    u16 radOutput = 5000;
-    u16 mAs = 200;
-
-    // Call the calcMGD function
-    u16 mgd_result = calcMGD(kv, thickness, target, filter, magnification, radOutput, mAs);
-
-    // Call the getIED function
-    u16 ied_result = getIED();
-    
-    // Print the results
-    printf("MGD Result: %u\n", mgd_result);
-    printf("IED Result: %u\n", ied_result);
-
-    return 0;
-}
+//int main() {
+//    // Define some test parameters
+//    u8 kv = 80;
+//    u8 thickness = 50;
+//    u8 target = TARGET_MO;
+//    u8 filter = FILTER_MATERIAL_RH;
+//    u8 magnification = 0;
+//    u16 radOutput = 5000;
+//    u16 mAs = 200;
+//
+//    // Call the calcMGD function
+//    u16 mgd_result = calcMGD(kv, thickness, target, filter, magnification, radOutput, mAs);
+//
+//    // Call the getIED function
+//    u16 ied_result = getIED();
+//    //int squre = square(5);
+//    /*printf("Square: %d\n", squre);*/
+//    // Print the results
+//    printf("MGD Result: %u\n", mgd_result);
+//    printf("IED Result: %u\n", ied_result);
+//
+//    return 0;
+//}
