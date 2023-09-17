@@ -13,10 +13,6 @@ u16 getIED( void )
   return IED; 
 }
 
-int square(int x) {
-    return x * x;
-}
-
 u32 calcInterpolate(u8 p, u8 limited_mm, const u8 mm_index[9]) {
     // find correct thickness index 0 - 7 for table seek
     // starting from high mm seek until equal or lower value is found from the table
