@@ -133,9 +133,9 @@
     <ClInclude Include="types.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\Unit_testing_planmed\unit_testing_planmed_c\test.cpp" />
     <ClCompile Include="dose.c" />
     <ClCompile Include="tables.c" />
+    <ClCompile Include="test.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
