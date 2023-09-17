@@ -31,7 +31,7 @@ u32 calcInterpolate(u8 p, u8 limited_mm, const u8 mm_index[9]) {
     }
 }
 
-u16 calcMgdIedAnode(const u16 material[][16], u8 kv, u8 p, u32 interpol, u8 filter)
+u16 calcMgdIedAnode(const u16 material[][16], u8 kv, u8 p, u32 interpol)
 {
     return material[p][kv - 20] - ((interpol * (material[p][kv - 20] - material[p + 1][kv - 20]) + 500) / THOUSAND);
 }
@@ -62,10 +62,10 @@ u16 calcMGD(u8 kv, u8 thickness, u8 target, u8 filter, u8 magnification, u16 rad
   // thickness interpolate AGD-value from table that has pre-calculated (*10000) values for
   // EUREF sheet D0001629-2 c, g and s-factors
   if (target == TARGET_MO) {
-      mgd = filter == FILTER_MATERIAL_RH ? calcMgdIedAnode(MGD_Rh, kv, p, interpol, filter) : calcMgdIedAnode(MGD_Mo, kv, p, interpol, filter);
+      mgd = filter == FILTER_MATERIAL_RH ? calcMgdIedAnode(MGD_Rh, kv, p, interpol) : calcMgdIedAnode(MGD_Mo, kv, p, interpol);
   }
   else {
-      mgd = filter == FILTER_MATERIAL_AG ? calcMgdIedAnode(MGD_W_Ag, kv, p, interpol, filter) : calcMgdIedAnode(MGD_W_Rh, kv, p, interpol, filter);
+      mgd = filter == FILTER_MATERIAL_AG ? calcMgdIedAnode(MGD_W_Ag, kv, p, interpol) : calcMgdIedAnode(MGD_W_Rh, kv, p, interpol);
   }
 
   mgd = mgd * IED;
@@ -90,15 +90,15 @@ static u16 calcIED(u8 kv, u8 thickness, u8 target, u8 filter, u8 magnification, 
   {          // Mo anode
     if (magnification > 170) 
     {
-      ied = filter == FILTER_MATERIAL_MO ? calcMgdIedAnode(IED_mag18_Mo, kv, p, interpol, filter) : calcMgdIedAnode(IED_mag18_Rh, kv, p, interpol, filter);
+      ied = filter == FILTER_MATERIAL_MO ? calcMgdIedAnode(IED_mag18_Mo, kv, p, interpol) : calcMgdIedAnode(IED_mag18_Rh, kv, p, interpol);
     }
     else if (magnification > 130)
     {
-      ied = filter == FILTER_MATERIAL_MO ? calcMgdIedAnode(IED_mag16_Mo, kv, p, interpol, filter) : calcMgdIedAnode(IED_mag16_Rh, kv, p, interpol, filter);
+      ied = filter == FILTER_MATERIAL_MO ? calcMgdIedAnode(IED_mag16_Mo, kv, p, interpol) : calcMgdIedAnode(IED_mag16_Rh, kv, p, interpol);
     }
     else 
     {
-      ied = filter == FILTER_MATERIAL_MO ? calcMgdIedAnode(IED_Mo, kv, p, interpol, filter) : calcMgdIedAnode(IED_Rh, kv, p, interpol, filter);
+      ied = filter == FILTER_MATERIAL_MO ? calcMgdIedAnode(IED_Mo, kv, p, interpol) : calcMgdIedAnode(IED_Rh, kv, p, interpol);
     }
   }   
   else 
@@ -106,15 +106,15 @@ static u16 calcIED(u8 kv, u8 thickness, u8 target, u8 filter, u8 magnification, 
     if (magnification >170) 
     {
        
-     ied = filter == FILTER_MATERIAL_AG ? calcMgdIedAnode(IED_W_mag18_Ag, kv, p, interpol, filter) : calcMgdIedAnode(IED_W_mag18_Rh, kv, p, interpol, filter);
+     ied = filter == FILTER_MATERIAL_AG ? calcMgdIedAnode(IED_W_mag18_Ag, kv, p, interpol) : calcMgdIedAnode(IED_W_mag18_Rh, kv, p, interpol);
     }
     else if ( magnification >130)
     {
-     ied = filter == FILTER_MATERIAL_AG ? calcMgdIedAnode(IED_W_mag16_Ag, kv, p, interpol, filter) : calcMgdIedAnode(IED_W_mag16_Rh, kv, p, interpol, filter);
+     ied = filter == FILTER_MATERIAL_AG ? calcMgdIedAnode(IED_W_mag16_Ag, kv, p, interpol) : calcMgdIedAnode(IED_W_mag16_Rh, kv, p, interpol);
     }
     else 
     {
-    ied = filter == FILTER_MATERIAL_AG ? calcMgdIedAnode(IED_W_Ag, kv, p, interpol, filter) : calcMgdIedAnode(IED_W_Rh, kv, p, interpol, filter);
+    ied = filter == FILTER_MATERIAL_AG ? calcMgdIedAnode(IED_W_Ag, kv, p, interpol) : calcMgdIedAnode(IED_W_Rh, kv, p, interpol);
 
     }
   }
