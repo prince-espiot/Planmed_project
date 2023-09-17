@@ -53,3 +53,10 @@ TEST(CalcIEDAndMGDTest, CalcIED_ValidInputs) {
     // Call calcIED with these inputs
     // Assert the result matches the expected IED value
 }
+
+// Tests for calcMGD WITH an INVALID thickness
+TEST(CalcMGDTest, CalcMGD_ValidInputs) {
+    //Again, define some valide input, THIS time with an invalid thickness say 0 or any number greater that 100
+    //Then call the calcMGD function into a results.
+    // Then assert if the result derived is equal to an expected outcome. just as in the case of calcIED
+}
