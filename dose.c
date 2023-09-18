@@ -6,13 +6,13 @@
 #define SEVEN 7 // why seven??   because the thickness can not be greater the 100---SO 103 doesnt matter
 #define THOUSAND 1000
 
-
-u16 getIED( void )
+ 
+ u16 getIED( void )
 {
   return IED; 
 }
 
-u32 calcInterpolate(u8 p, u8 limited_mm, const u8 mm_index[9]) {
+static u32 calcInterpolate(u8 p, u8 limited_mm, const u8 mm_index[9]) {
     // find correct thickness index 0 - 7 for table seek
     // starting from high mm seek until equal or lower value is found from the table
     while (p != 0 && mm_index[p] >= limited_mm) {
@@ -30,13 +30,13 @@ u32 calcInterpolate(u8 p, u8 limited_mm, const u8 mm_index[9]) {
     }
 }
 
-u16 calcMgdIedAnode(const u16 material[][16], u8 kv, u8 p, u32 interpol)
+static u16 calcMgdIedAnode(const u16 material[][16], u8 kv, u8 p, u32 interpol)
 {
     return material[p][kv - 20] - ((interpol * (material[p][kv - 20] - material[p + 1][kv - 20]) + 500) / THOUSAND);
 }
 
 // AGD calculation
-u16 calcMGD(u8 kv, u8 thickness, u8 target, u8 filter, u8 magnification, u16 radOutput, u16 mAs ) 
+ u16 calcMGD(u8 kv, u8 thickness, u8 target, u8 filter, u8 magnification, u16 radOutput, u16 mAs )
 {
   u32 mgd = 0;
   u32 interpol;
@@ -124,27 +124,3 @@ static u16 calcIED(u8 kv, u8 thickness, u8 target, u8 filter, u8 magnification, 
 }
 
 
-
-int main() {
-    // Define some test parameters
-    u8 kv = 80;
-    u8 thickness = 50;
-    u8 target = TARGET_MO;
-    u8 filter = FILTER_MATERIAL_RH;
-    u8 magnification = 0;
-    u16 radOutput = 5000;
-    u16 mAs = 200;
-
-    // Call the calcMGD function
-    u16 mgd_result = calcMGD(kv, thickness, target, filter, magnification, radOutput, mAs);
-
-    // Call the getIED function
-    u16 ied_result = getIED();
-    //int squre = square(5);
-    /*printf("Square: %d\n", squre);*/
-    // Print the results
-    printf("MGD Result: %u\n", mgd_result);
-    printf("IED Result: %u\n", ied_result);
-
-    return 0;
-}

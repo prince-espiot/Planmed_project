@@ -134,6 +134,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dose.c" />
+    <ClCompile Include="main.c" />
     <ClCompile Include="tables.c" />
     <ClCompile Include="test.cpp" />
   </ItemGroup>
