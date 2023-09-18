@@ -4,7 +4,7 @@
 #include "types.h"
 #include "parameters.h"
 #include "tables.h"
-#include "dose.c"
+
 
 TEST(TestCaseName, TestName) {
   EXPECT_EQ(1, 1);

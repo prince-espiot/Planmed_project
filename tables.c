@@ -1,4 +1,4 @@
-#include "types.h"
+#include "tables.h"
 																														
 const u16 MGD_W_Ag [9][16] = 
 {																																
