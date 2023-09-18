@@ -133,6 +133,7 @@
     <ClInclude Include="types.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="diy_compare.c" />
     <ClCompile Include="dose.c" />
     <ClCompile Include="main.c" />
     <ClCompile Include="tables.c" />
