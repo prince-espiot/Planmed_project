@@ -23,13 +23,12 @@ static u32 calcInterpolate(u8 p, u8 limited_mm, const u8 mm_index[9]) {  //WORKI
     // starting from high mm seek until equal or lower value is found from the table
     return (THOUSAND * (limited_mm - mm_index[p])) / (mm_index[p + 1] - mm_index[p]);
 }
-static u16 calcMgdAnode(const u16 material[][16], u8 kv, u8 p, u32 interpol){
+static u16 calcMgdAnode(const u16 material[][16], u8 kv, u8 p, u32 interpol){//this substract
         return material[p][kv - 20] - ((interpol * (material[p][kv - 20] - material[p + 1][kv - 20]) + 500) / THOUSAND);
 }
-static u16 calcIedAnode(const u16 material[][16], u8 p, u8 kv, u32 interpol) {
-    return material[p][kv - 20] + ((interpol * (material[p + 1][kv - 20] - material[p][kv - 20]) + 500) / 1000);
+static u16 calcIedAnode(const u16 material[][16], u8 p, u8 kv, u32 interpol) { //this add take note!!!
+    return material[p][kv - 20] + ((interpol * (material[p + 1][kv - 20] - material[p][kv - 20]) + 500) / THOUSAND);
 }
-
 
 // AGD calculation
 u16 calcMGD(u8 kv, u8 thickness, u8 target, u8 filter, u8 magnification, u16 radOutput, u16 mAs)
@@ -64,7 +63,7 @@ u16 calcMGD(u8 kv, u8 thickness, u8 target, u8 filter, u8 magnification, u16 rad
         mgd = filter == FILTER_MATERIAL_RH ?
             calcMgdAnode(MGD_Rh, kv, p, interpol) :
             calcMgdAnode(MGD_Mo, kv, p, interpol);
-        printf("mgd AFTER FILTER value:%d\n", mgd);
+       // printf("mgd AFTER FILTER value:%d\n", mgd);
     }
     else {
         mgd = filter == FILTER_MATERIAL_AG ? 
@@ -76,9 +75,7 @@ u16 calcMGD(u8 kv, u8 thickness, u8 target, u8 filter, u8 magnification, u16 rad
     return (u16)mgd;
 }
 
-
 // IED (Incident Entrance Dose) calculation
-
 static u16 calcIED(u8 kv, u8 thickness, u8 target, u8 filter, u8 magnification, u16 radOutput, u16 mAs)
 {
     u32 ied = 0;
@@ -86,61 +83,53 @@ static u16 calcIED(u8 kv, u8 thickness, u8 target, u8 filter, u8 magnification, 
     u32 interpol;
     u8 limited_mm = thickness;
 
-    // find correct thickness index   0 - 7 for table seek
-    // starting from high mm seek until equal or lower value is found from the table
     p = calcP(p, limited_mm, mm_index);
     // calculate thickness interpolation factor
     interpol = calcInterpolate(p, limited_mm, mm_index);
 
-    // thickness interpolate IED-value from table that has pre-calculated (*10000) values for
-    // kV and thickness dependent radiation output factor 
-
     if (target == TARGET_MO)
     {          // Mo anode
-        if (magnification > 170)
+        if (magnification > ONESEVENTY)
         {
-            ied = filter == FILTER_MATERIAL_MO ?
+            ied = (filter == FILTER_MATERIAL_MO) ?
                 calcIedAnode(IED_mag18_Mo, p, kv, interpol) :
                 calcIedAnode(IED_mag18_Rh, p, kv, interpol);
         }
-        else if (magnification > 130)
+        else if (magnification > ONETHIRTY)
         {
-            ied = filter == FILTER_MATERIAL_MO ?
+            ied = (filter == FILTER_MATERIAL_MO) ?
                 calcIedAnode(IED_mag16_Mo, p, kv, interpol) :
                 calcIedAnode(IED_mag16_Rh, p, kv, interpol);
         }
         else
         {
-            ied = filter == FILTER_MATERIAL_MO ?
+            ied = (filter == FILTER_MATERIAL_MO) ?
                 calcIedAnode(IED_Mo, p, kv, interpol) :
                 calcIedAnode(IED_Rh, p, kv, interpol);
         }
     }
     else
     {         // W anode
-        if (magnification > 170)
+        if (magnification > ONESEVENTY)
         {
-            ied = filter == FILTER_MATERIAL_AG ?
+            ied = (filter == FILTER_MATERIAL_AG) ?
                 calcIedAnode(IED_W_mag18_Ag, p, kv, interpol) :
                 calcIedAnode(IED_W_mag18_Rh, p, kv, interpol);
         }
-        else if (magnification > 130)
+        else if (magnification > ONETHIRTY)
         {
-            ied = filter == FILTER_MATERIAL_AG ?
+            ied = (filter == FILTER_MATERIAL_AG) ?
                 calcIedAnode(IED_W_mag16_Ag, p, kv, interpol) :
                 calcIedAnode(IED_W_mag16_Rh, p, kv, interpol);
         }
         else
         {
-            ied = filter == FILTER_MATERIAL_AG ?
+            ied = (filter == FILTER_MATERIAL_AG) ?
                 calcIedAnode(IED_W_Ag, p, kv, interpol) :
                 calcIedAnode(IED_W_Rh, p, kv, interpol);
         }
     }
-
-
     // IED value is multiplied by mAs and tube radiation output µGy/mAs
-
     ied = ((ied * mAs) + 500) / 1000;
     ied = ((ied * radOutput) + 500) / 1000;
     return (u16)ied;

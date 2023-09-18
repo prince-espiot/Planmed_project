@@ -19,8 +19,10 @@ static u16 calcMGDTest(u8 kv, u8 thickness, u8 target, u8 filter, u8 magnificati
     u8 limited_mm;
     u8 p;
 
-    if (thickness == 0)
+    if (thickness == 0) {
+        printf("Called");
         return 0;
+    }
 
     if (thickness > 120) // esp. in man mode could expose with paddle up and then values become totally bogus
     {
@@ -29,8 +31,10 @@ static u16 calcMGDTest(u8 kv, u8 thickness, u8 target, u8 filter, u8 magnificati
     }
 
     // thickness must be limited between 10 - 100 mm
-    if (thickness < 10)
+    if (thickness < 10) {
         limited_mm = 10;
+        printf("interpol_com value:%d\n", limited_mm);
+    }
     else if (thickness > 100)
         limited_mm = 100;
     else
@@ -46,7 +50,7 @@ static u16 calcMGDTest(u8 kv, u8 thickness, u8 target, u8 filter, u8 magnificati
     }
 
     // calculate thickness interpolation factor
-
+    printf("limited_mm value:%d\n", limited_mm);
     interpol = (1000 * (limited_mm - mm_index[p])) / (mm_index[p + 1] - mm_index[p]);
     printf("interpol_com value:%d\n", interpol);
     // thickness interpolate AGD-value from table that has pre-calculated (*10000) values for

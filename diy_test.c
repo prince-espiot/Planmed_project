@@ -5,7 +5,7 @@
 int main() {
     // Define some test parameters to test out the working code. 
     u8 kv = 80;
-    u8 thickness = 23;
+    u8 thickness = 50;
     u8 target = TARGET_MO;
     u8 filter = FILTER_MATERIAL_AG;
     u8 magnification = 180;
@@ -30,11 +30,17 @@ int main() {
     u16 ied_test = calcIEDTest(kv, thickness, target, filter, magnification, radOutput, mAs);
 
     // Compare the results
-    if (mgd_result == mgd_test && ied_test== ied_result) {
-        printf("The results are equal: %d and %d\n", mgd_test, ied_test);
+    if (mgd_result == mgd_test && ied_test == ied_result) {
+        printf("Passed: MGD Test: %d\n", mgd_test);
+        printf("        MGD Result: %d\n", mgd_result);
+        printf("        IED Test: %d\n", ied_test);
+        printf("        IED Result: %d\n", ied_result);
     }
     else {
-        printf("The results are not equal:%d\n", mgd_test);
+        printf("Failed: MGD Test: %d\n", mgd_test);
+        printf("        MGD Result: %d\n", mgd_result);
+        printf("        IED Test: %d\n", ied_test);
+        printf("        IED Result: %d\n", ied_result);
     }
 
     return 0;

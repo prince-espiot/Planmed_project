@@ -135,7 +135,7 @@
   <ItemGroup>
     <ClCompile Include="diy_compare.c" />
     <ClCompile Include="dose.c" />
-    <ClCompile Include="main.c" />
+    <ClCompile Include="diy_test.c" />
     <ClCompile Include="tables.c" />
     <ClCompile Include="test.cpp" />
   </ItemGroup>
