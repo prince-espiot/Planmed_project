@@ -20,7 +20,7 @@ static u16 calcMGDTest(u8 kv, u8 thickness, u8 target, u8 filter, u8 magnificati
     u8 p;
 
     if (thickness == 0) {
-        printf("Called");
+        //printf("Called");
         return 0;
     }
 
@@ -33,7 +33,7 @@ static u16 calcMGDTest(u8 kv, u8 thickness, u8 target, u8 filter, u8 magnificati
     // thickness must be limited between 10 - 100 mm
     if (thickness < 10) {
         limited_mm = 10;
-        printf("interpol_com value:%d\n", limited_mm);
+        //printf("interpol_com value:%d\n", limited_mm);
     }
     else if (thickness > 100)
         limited_mm = 100;
@@ -50,9 +50,9 @@ static u16 calcMGDTest(u8 kv, u8 thickness, u8 target, u8 filter, u8 magnificati
     }
 
     // calculate thickness interpolation factor
-    printf("limited_mm value:%d\n", limited_mm);
+    //printf("limited_mm value:%d\n", limited_mm);
     interpol = (1000 * (limited_mm - mm_index[p])) / (mm_index[p + 1] - mm_index[p]);
-    printf("interpol_com value:%d\n", interpol);
+    //printf("interpol_com value:%d\n", interpol);
     // thickness interpolate AGD-value from table that has pre-calculated (*10000) values for
     // EUREF sheet D0001629-2 c, g and s-factors
 
@@ -60,7 +60,7 @@ static u16 calcMGDTest(u8 kv, u8 thickness, u8 target, u8 filter, u8 magnificati
     {      // Mo anode
         if (filter == FILTER_MATERIAL_RH) {
             mgd = MGD_Rh[p][kv - 20] - ((interpol * (MGD_Rh[p][kv - 20] - MGD_Rh[p + 1][kv - 20]) + 500) / 1000);
-            printf("mgd AFTER FILTER_COM value:%d\n", mgd);
+            //printf("mgd AFTER FILTER_COM value:%d\n", mgd);
         }
         else
             mgd = MGD_Mo[p][kv - 20] - ((interpol * (MGD_Mo[p][kv - 20] - MGD_Mo[p + 1][kv - 20]) + 500) / 1000);
@@ -77,7 +77,7 @@ static u16 calcMGDTest(u8 kv, u8 thickness, u8 target, u8 filter, u8 magnificati
     mgd = mgd * IED;
 
     mgd = (u16)((mgd + 5000) / 10000); // to make LSB of mgd equal 10 uGy for protocol spec and accuracy correctio / 1000
-    printf("mgd_com value:%d\n", mgd);
+    //printf("mgd_com value:%d\n", mgd);
     return (u16)mgd;
 }
 
@@ -101,7 +101,7 @@ static u16 calcIEDTest(u8 kv, u8 thickness, u8 target, u8 filter, u8 magnificati
     // calculate thickness interpolation factor
 
     interpol = (1000 * (limited_mm - mm_index[p])) / (mm_index[p + 1] - mm_index[p]);
-    printf("interpol_com_ied value:%d\n", interpol);
+    //printf("interpol_com_ied value:%d\n", interpol);
 
     // thickness interpolate IED-value from table that has pre-calculated (*10000) values for
     // kV and thickness dependent radiation output factor 
@@ -159,6 +159,6 @@ static u16 calcIEDTest(u8 kv, u8 thickness, u8 target, u8 filter, u8 magnificati
 
     ied = ((ied * mAs) + 500) / 1000;
     ied = ((ied * radOutput) + 500) / 1000;
-    printf("ied_com value:%d\n", interpol);
+    //printf("ied_com value:%d\n", interpol);
     return (u16)ied;
 }
