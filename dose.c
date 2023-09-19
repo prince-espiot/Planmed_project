@@ -9,7 +9,7 @@ u16 getIED(void)
 {
     return IED;
 }
-static u32 calcP(u8 p, u8 limited_mm, const u8 mm_index[9]) {  //WORKING
+static u32 calcP(u8 p, u8 limited_mm, const u8 mm_index[]) {  
     // find correct thickness index 0 - 7 for table seek
     // starting from high mm seek until equal or lower value is found from the table
     while (p != 0 && mm_index[p] >= limited_mm) {
@@ -18,12 +18,13 @@ static u32 calcP(u8 p, u8 limited_mm, const u8 mm_index[9]) {  //WORKING
     }
     return p;
 }
-static u32 calcInterpolate(u8 p, u8 limited_mm, const u8 mm_index[9]) {  //WORKING
-    // find correct thickness index 0 - 7 for table seek
-    // starting from high mm seek until equal or lower value is found from the table
+static u32 calcInterpolate(u8 p, u8 limited_mm, const u8 mm_index[9]) {  
+    // calculate thickness interpolation factor
     return (THOUSAND * (limited_mm - mm_index[p])) / (mm_index[p + 1] - mm_index[p]);
 }
 static u16 calcMgdAnode(const u16 material[][16], u8 kv, u8 p, u32 interpol){//this substract
+    // thickness interpolate AGD-value from table that has pre-calculated (*10000) values for
+    // EUREF sheet D0001629-2 c, g and s-factors
         return material[p][kv - 20] - ((interpol * (material[p][kv - 20] - material[p + 1][kv - 20]) + 500) / THOUSAND);
 }
 static u16 calcIedAnode(const u16 material[][16], u8 p, u8 kv, u32 interpol) { //this add take note!!!
@@ -44,29 +45,21 @@ u16 calcMGD(u8 kv, u8 thickness, u8 target, u8 filter, u8 magnification, u16 rad
         return 0;
     }
     // thickness must be limited between 10 - 100 mm
-   // i CAN USE THE  ternary operator here c? T:F
     limited_mm = thickness < 10 ? 10 : (thickness > 100 ? 100 : thickness);
 
     IED = calcIED(kv, limited_mm, target, filter, magnification, radOutput, mAs);
 
-    // find correct thickness index 0 - 7 for table seek
-    // starting from high mm seek until equal or lower value is found from the table
     p = calcP(p, limited_mm, mm_index);
-
-    // calculate thickness interpolation factor
+        
     interpol = calcInterpolate(p, limited_mm, mm_index);
 
-    // thickness interpolate AGD-value from table that has pre-calculated (*10000) values for
-    // EUREF sheet D0001629-2 c, g and s-factors
-
     if (target == TARGET_MO) {
-        mgd = filter == FILTER_MATERIAL_RH ?
+        mgd = (filter == FILTER_MATERIAL_RH) ?
             calcMgdAnode(MGD_Rh, kv, p, interpol) :
             calcMgdAnode(MGD_Mo, kv, p, interpol);
-       // printf("mgd AFTER FILTER value:%d\n", mgd);
     }
     else {
-        mgd = filter == FILTER_MATERIAL_AG ? 
+        mgd = (filter == FILTER_MATERIAL_AG) ?
             calcMgdAnode(MGD_W_Ag, kv, p, interpol) :
             calcMgdAnode(MGD_W_Rh, kv, p, interpol);
     }
@@ -84,7 +77,7 @@ static u16 calcIED(u8 kv, u8 thickness, u8 target, u8 filter, u8 magnification, 
     u8 limited_mm = thickness;
 
     p = calcP(p, limited_mm, mm_index);
-    // calculate thickness interpolation factor
+
     interpol = calcInterpolate(p, limited_mm, mm_index);
 
     if (target == TARGET_MO)
