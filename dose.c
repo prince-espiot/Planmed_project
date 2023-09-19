@@ -8,6 +8,7 @@ u16 getIED(void)
 static u32 calcP(u8 p, u8 limited_mm, const u8 mm_index[]) {  
     // find correct thickness index 0 - 7 for table seek
     // starting from high mm seek until equal or lower value is found from the table
+    p = 7;
     while (p != 0 && mm_index[p] >= limited_mm) {
         p--;
     }
@@ -31,7 +32,7 @@ u16 calcMGD(u8 kv, u8 thickness, u8 target, u8 filter, u8 magnification, u16 rad
     u32 mgd = 0;
     u32 interpol;
     u8 limited_mm;
-    u8 p = 7;
+    u8 p =0;
 
     //simplify this if statements with ||
     if (thickness <= 0 || thickness > 120) {
@@ -66,7 +67,7 @@ u16 calcMGD(u8 kv, u8 thickness, u8 target, u8 filter, u8 magnification, u16 rad
 static u16 calcIED(u8 kv, u8 thickness, u8 target, u8 filter, u8 magnification, u16 radOutput, u16 mAs)
 {
     u32 ied = 0;
-    u8 p=7;
+    u8 p=0;
     u32 interpol;
     u8 limited_mm = thickness;
 
