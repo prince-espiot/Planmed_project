@@ -37,13 +37,13 @@ TEST(CalcInterpolateTest, TestWithInvalidInputPZero) {
     EXPECT_EQ(result, 0);
 }
 
-TEST(CalcMgdIedAnodeTest, TestWithValidInputs) { // I can also test for invalid inputs at were p=0 and kv =0
+TEST(CalcMgdAnodeTest, TestWithValidInputs) { // I can also test for invalid inputs at were p=0 and kv =0
     u8 kv = 80;
     u8 p = 3;
     u32 interpol = 2000;
     u8 filter = 2;
 
-    u16 result = calcMgdIedAnode(MGD_Mo, kv, p, interpol);
+    u16 result = calcIedAnode(MGD_Mo, kv, p, interpol);
     u16 expected_result = MGD_Mo[p][kv - 20] - ((interpol * (MGD_Mo[p][kv - 20] - MGD_Mo[p + 1][kv - 20]) + 500) / 1000);
 
     // Assert the result
