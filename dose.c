@@ -1,9 +1,5 @@
 #include <stdio.h>
 #include "dose.h"
-#define ONETHIRTY 130   //JUST A PERSONAL TOUCH i LIKE TO DEFINE certain constants in the code.
-#define ONESEVENTY 170
-#define SEVEN 7 // why seven??   because the thickness can not be greater the 100---SO 103 doesnt matter
-#define THOUSAND 1000
 
 u16 getIED(void)
 {
@@ -13,31 +9,29 @@ static u32 calcP(u8 p, u8 limited_mm, const u8 mm_index[]) {
     // find correct thickness index 0 - 7 for table seek
     // starting from high mm seek until equal or lower value is found from the table
     while (p != 0 && mm_index[p] >= limited_mm) {
-        ///printf("p value:%d\n", p);
         p--;
     }
     return p;
 }
 static u32 calcInterpolate(u8 p, u8 limited_mm, const u8 mm_index[9]) {  
     // calculate thickness interpolation factor
-    return (THOUSAND * (limited_mm - mm_index[p])) / (mm_index[p + 1] - mm_index[p]);
+    return (1000 * (limited_mm - mm_index[p])) / (mm_index[p + 1] - mm_index[p]);
 }
 static u16 calcMgdAnode(const u16 material[][16], u8 kv, u8 p, u32 interpol){//this substract
     // thickness interpolate AGD-value from table that has pre-calculated (*10000) values for
     // EUREF sheet D0001629-2 c, g and s-factors
-        return material[p][kv - 20] - ((interpol * (material[p][kv - 20] - material[p + 1][kv - 20]) + 500) / THOUSAND);
+        return material[p][kv - 20] - ((interpol * (material[p][kv - 20] - material[p + 1][kv - 20]) + 500) / 1000);
 }
 static u16 calcIedAnode(const u16 material[][16], u8 p, u8 kv, u32 interpol) { //this add take note!!!
-    return material[p][kv - 20] + ((interpol * (material[p + 1][kv - 20] - material[p][kv - 20]) + 500) / THOUSAND);
+    return material[p][kv - 20] + ((interpol * (material[p + 1][kv - 20] - material[p][kv - 20]) + 500) / 1000);
 }
-
 // AGD calculation
 u16 calcMGD(u8 kv, u8 thickness, u8 target, u8 filter, u8 magnification, u16 radOutput, u16 mAs)
 {
     u32 mgd = 0;
     u32 interpol;
     u8 limited_mm;
-    u8 p = SEVEN;
+    u8 p = 7;
 
     //simplify this if statements with ||
     if (thickness <= 0 || thickness > 120) {
@@ -72,7 +66,7 @@ u16 calcMGD(u8 kv, u8 thickness, u8 target, u8 filter, u8 magnification, u16 rad
 static u16 calcIED(u8 kv, u8 thickness, u8 target, u8 filter, u8 magnification, u16 radOutput, u16 mAs)
 {
     u32 ied = 0;
-    u8 p=SEVEN;
+    u8 p=7;
     u32 interpol;
     u8 limited_mm = thickness;
 
@@ -82,13 +76,13 @@ static u16 calcIED(u8 kv, u8 thickness, u8 target, u8 filter, u8 magnification, 
 
     if (target == TARGET_MO)
     {          // Mo anode
-        if (magnification > ONESEVENTY)
+        if (magnification > 170)
         {
             ied = (filter == FILTER_MATERIAL_MO) ?
                 calcIedAnode(IED_mag18_Mo, p, kv, interpol) :
                 calcIedAnode(IED_mag18_Rh, p, kv, interpol);
         }
-        else if (magnification > ONETHIRTY)
+        else if (magnification > 130)
         {
             ied = (filter == FILTER_MATERIAL_MO) ?
                 calcIedAnode(IED_mag16_Mo, p, kv, interpol) :
@@ -103,13 +97,13 @@ static u16 calcIED(u8 kv, u8 thickness, u8 target, u8 filter, u8 magnification, 
     }
     else
     {         // W anode
-        if (magnification > ONESEVENTY)
+        if (magnification > 170)
         {
             ied = (filter == FILTER_MATERIAL_AG) ?
                 calcIedAnode(IED_W_mag18_Ag, p, kv, interpol) :
                 calcIedAnode(IED_W_mag18_Rh, p, kv, interpol);
         }
-        else if (magnification > ONETHIRTY)
+        else if (magnification > 130)
         {
             ied = (filter == FILTER_MATERIAL_AG) ?
                 calcIedAnode(IED_W_mag16_Ag, p, kv, interpol) :
