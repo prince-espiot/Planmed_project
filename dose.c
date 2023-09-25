@@ -35,7 +35,10 @@ u16 calcMGD(u8 kv, u8 thickness, u8 target, u8 filter, u8 magnification, u16 rad
     u8 p =0;
 
     //simplify this if statements with ||
-    if (thickness <= 0 || thickness > 120) {
+    if (thickness == 0){
+        return 0;
+    }
+    else if (thickness > 120){
         IED = 0;
         return 0;
     }
