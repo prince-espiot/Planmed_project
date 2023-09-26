@@ -34,7 +34,7 @@ u16 calcMGD(u8 kv, u8 thickness, u8 target, u8 filter, u8 magnification, u16 rad
     u8 limited_mm;
     u8 p =0;
 
-    //simplify this if statements with ||
+    //simplify this if statements 
     if (thickness == 0){
         return 0;
     }
